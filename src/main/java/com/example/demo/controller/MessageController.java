@@ -104,10 +104,14 @@ public class MessageController {
                 uploadDir.mkdir();
             }
 
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + "." + file.getOriginalFilename();
-
-            file.transferTo(new File(uploadPath + "/" + resultFilename));
+            String resultFilename = UUID.randomUUID().toString() + "." + file.getOriginalFilename();
+            File tempFile = Files.createTempFile(UUID.randomUUID().toString(), file.getOriginalFilename()).toFile();
+            file.transferTo(tempFile);
+            File savedFile = new File(uploadPath + File.separator + resultFilename);
+            copyFile(tempFile, savedFile);
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
 
             message.setFilename(resultFilename);
         }
